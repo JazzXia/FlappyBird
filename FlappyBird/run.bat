@@ -1,0 +1,1 @@
+java -cp bird.jar com.tarena.bird.BirdGame

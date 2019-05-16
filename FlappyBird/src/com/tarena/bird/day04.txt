@@ -1,0 +1,166 @@
+1 业务需求定义：是使用文字描述软件的功能
+   ...
+2 业务需求分析: 找对象（东西），以及对象关系！
+  BirdGame
+    |-- 地面Ground
+    |-- 小鸟Bird
+    |-- 多个柱子
+   
+3 软件概要设计：计算机只能按顺序“处理数据”
+  数据建模：使用一个数据模型，描述对象的关系
+    使用绘图坐标系作为参考模型，鸟是正方形区域
+    柱子是长方形区域， 中间有开口，地面是矩形
+    
+  对象是结构化的“数据”，是一组有关系的数据
+  鸟：x,y位置 size：大小 
+  地面：x,y位置  width,height宽高
+  柱子：x,y位置  width,height宽高  gap缝隙
+    
+ 类的设计：编码
+   
+   BirdGame 类继承于 JPanel 整体游戏 
+     |-- Ground ground
+     |-- Bird bird
+     |-- Column column1, column2
+   
+   Ground 类 代表地面类型
+     |-- x,y
+     |-- width, height
+   
+   Bird 类 代表鸟，定义(规定)了鸟对象的数据结构
+     |-- x,y 
+     |-- size 
+     |-- width, height
+     
+   Column 类
+     |-- x,y
+     |-- width, height
+  
+  
+4 软件的详细设计：就是数据的计算方法，算法！
+  0) 数据的初始化: 图片的加载，初始数值的设计
+    设计：构造器, 初始化合理的初始值
+  
+  1) 软件界面的绘制
+    main()
+    paint()
+  
+  2) 地面的运动
+    添加BirdGame中action()方法
+    在方法中利用死循环，
+      1）修改地面的位置 ground.step()，
+      2）重新绘制界面，
+      3）休眠 1/30秒
+  
+  在main方法中调用action（）
+//BirdGame中添加方法action()
+	public void action() throws Exception {
+		while(true){
+			ground.step();
+			repaint();
+			Thread.sleep(1000/30);
+		}
+	}
+	public void step(){//地面的类体中,添加方法，地面移动一步
+		x--;
+		if(x==-109){
+			x = 0;
+		}
+	}
+    game.action(); //main 中添加
+
+   
+  3) 柱子的移动
+    1 在Column上添加 step()
+    2 在action() 方法中调用step()
+  
+  4) 鸟的运动
+     4.1 上抛运动
+     4.2 动画处理
+     4.3 倾角
+     
+     在Bird 中添加方法 step()
+     注意：需要给Bird 增加新属性：
+     g  重力加速度
+     t  两次位置的间隔时间
+     v0 初始上抛速度
+     speed 是当前的上抛速度
+     s     是经过时间t以后的位移
+     alpha 是鸟的倾角
+  
+  5) 事件处理：相应键盘/鼠标的动作，影响鸟的行为
+    1 使用“匿名内部类”声明事件"处理方法"
+          在action()方法中添加
+    2 在事件中，调用bird的flappy（飞扬）方法
+          在bird类添加方法 flappy()
+    3 添加事件监听，注册事件监听（挂上去）
+          在action()方法中添加
+  
+  6) 碰撞检测 
+    6.1 碰地面
+     1 为BirdGame增加boolean变量 gameOver
+     标识游戏是否结束 (true 真的  false假的)
+      gameOver = true 表示游戏真的结束了
+      gameOver = false 表示游戏还没有结束了
+      默认值应该是： false
+     2 当检测到碰到地面时候 gameOver = true
+	  在主循环中检测是否碰到地面。
+	  在bird中增加方法hit(ground)检测鸟是否碰地面 
+     3 修改action中主循环，当游戏没有结束时候
+         执行 鸟和柱子的移动，也就是说：游戏结束了
+         鸟和柱子就不移动了。
+     4 在paint方法 当 gameOver = true时候
+         中显示游戏结束界面（要先装载 gameover.png）
+    
+    6.2 碰柱子
+  
+  7) 计分
+   1 为BirdGame 增加属性变量 score 用于计分
+     score 初始值为 0
+   2 在action方法的主循环中，增加判分逻辑
+       当柱子移动到鸟的位置时候（x坐标重合）
+       加一分
+   3 在paint方法中将分数画出来。    
+     
+  
+  8) 开始和结束处理
+   1 BirdGame增加变量 started = false
+     表示游戏没有开始
+   2 在鼠标事件中增加 点击鼠标时候 started=true  
+   3 修改action中主循环，开始以后才能执行
+     柱子和鸟的移动方法
+   4 修改paint方法绘制 没有开始时候绘制开始界面
+  
+  重新开始？
+  1) 当游戏结束以后点击了鼠标, 就重新开始游戏
+    修改鼠标事件代码！ 
+    重新开始游戏： 
+     started = false;
+     gameOver = false;
+     score = 0;
+     bird = new Bird();
+     column1 = new Column(1);
+     column2 = new Column(2);
+     
+index = 0  1  2  3  4  5  6  7  8  9 10 11 12 13
+ %8   = 0  1  2  3  4  5  6  7  0  1  2  3  4  5  
+ /2   = 0  0  1  1  2  2  3  3  4  4  5  5  6  6
+(/2)%8= 0  0  1  1  2  3  3  3  4  4  5  5  6  6  
+
+
+
+
+
+
+
+
+
+   
+    
+    
+    
+    
+    
+    
+    
+    
